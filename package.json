@@ -1,0 +1,28 @@
+{
+  "name": "alpsdrive-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "TSBuild" : "npx tsc",
+    "dev": "nodemon ./dist/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mathieu-Berthet/AlpsDrive-TS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mathieu-Berthet/AlpsDrive-TS/issues"
+  },
+  "homepage": "https://github.com/Mathieu-Berthet/AlpsDrive-TS#readme",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.1",
+    "typescript": "^5.0.4"
+  }
+}
