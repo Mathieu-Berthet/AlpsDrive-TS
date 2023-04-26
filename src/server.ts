@@ -146,4 +146,138 @@ app.get('/api/drive/:name', (req : Request, res : Response): void => {
 });
 
 
+//////////////////////////////////  METHOD DELETE ///////////////////////////////////////////////////
+// A faire : Tester si c'est un fichier ou un dossier
+
+//DELETE : Supression d'un répertoire
+app.delete('/api/drive/:name', (req : Request, res : Response): void => {
+    let nameFile: string = req.params.name;
+    let newFileName: string = nameFile.replace('.', '');
+    if(myRegex.test(newFileName))
+    {
+        console.log("test réussi");
+        //Rajouter un test pour l'existance du dossier
+        fs.stat(myPath + "/" + nameFile, (err : ErrnoException | null, fold : fs.Stats) : void => {
+            if (fold.isDirectory())
+            {
+                fs.rmdir(myPath + "/" + nameFile, (err : ErrnoException | null) : void => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+                res.status(201).send(myPath);
+            }
+            else
+            {
+                fs.rm(myPath + "/" + nameFile, (err : ErrnoException | null) : void => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+                res.status(201).send(myPath);
+            }
+        });
+    }
+    else
+    {
+        console.log("Test echoué");
+        res.status(400);
+    }
+});
+
+//DELETE : Supression d'un dossier dans un dossier
+app.delete('/api/drive/:folder/:name', (req : Request, res : Response) : void => {
+    let folderName: string = req.params.folder;
+    let name : string = req.params.name;
+    if(fs.existsSync(myPath + "/" + folderName))
+    {
+        let newFileName = name.replace('.', '');
+        if(myRegex.test(newFileName))
+        {
+            console.log("test réussi");
+            //Rajouter un test pour l'existance du dossier
+            fs.stat(myPath + "/" + folderName + "/" + name, (err: ErrnoException| null, fold : fs.Stats) : void => {
+                if (fold.isDirectory())
+                {
+                    fs.rmdir(myPath + "/" + folderName + "/" + name, (err : ErrnoException | null) : void => {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                    res.status(201).send(myPath);
+                }
+                else
+                {
+                    fs.rm(myPath + "/" + folderName + "/" + name, (err: ErrnoException | null) : void => {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                    res.status(201).send(myPath);
+                }
+            });
+        }
+        else
+        {
+            console.log("Test echoué");
+            res.status(400);
+        }
+    }
+    else
+    {
+        console.log("Le fichier ou répertoire est déjà supprimé");
+        res.status(404);
+    }
+
+})
+
+//////////////////////////////////  METHOD PUT ///////////////////////////////////////////////////
+app.put('/api/drive', (req: Request, res: Response) : void =>
+{
+
+    res.setHeader('Content-Type', 'multipart/form-data');
+    res.setHeader('Accept-Encoding', 'gzip, *');
+    res.setHeader('Content-Encoding', 'gzip, *');
+    let fileName : any = req.files.file.filename;
+    if(fileName)
+    {
+        console.log("coucou");
+        fs.copyFileSync(req.files.file.file, myPath + "/" + fileName);
+        res.status(201).send(myPath);
+    }
+    else
+    {
+        console.log("pas de fichier");
+        res.status(400).send(myPath);
+    }
+});
+
+app.put('/api/drive/:folder', (req : Request, res : Response) : void => {
+
+    res.setHeader('Content-Type', 'multipart/form-data');
+    res.setHeader('Accept-Encoding', 'gzip, *');
+    res.setHeader('Content-Encoding', 'gzip, *');
+    let folderName : string = req.params.folder;
+    if(fs.existsSync(myPath + "/" + folderName))
+    {
+        let fileFName  : any = req.files.file.filename;
+        if (fileFName)
+        {
+            console.log("coucou");
+            fs.copyFileSync(req.files.file.file, myPath + "/" + folderName + "/" + fileFName);
+            res.status(201).send(myPath + "/" + folderName);
+        }
+        else
+        {
+            console.log("pas de fichier");
+            res.status(400).send(myPath + "/" + folderName);
+        }
+    }
+    else
+    {
+        console.log("Le répertoire n'existe pas");
+        res.status(404);
+    }
+});
+
 export default app;
