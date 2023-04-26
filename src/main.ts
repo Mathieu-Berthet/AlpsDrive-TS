@@ -1,7 +1,7 @@
 console.log("coucou");
 
 import http from 'http';
-import app from './app';
+import app from './server';
 
 
 app.set('port', process.env.PORT || 3000);
