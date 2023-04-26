@@ -1,14 +1,13 @@
 import express, { Request, Response } from "express"
 import os from "os";
 import fs from "fs";
-import ErrnoException = NodeJS.ErrnoException;
-//const bb = require('express-busboy');
+import bb from "express-busboy"
 const app = express();
 
-/*bb.extend(server, {
+bb.extend(app, {
     upload: true,
     path: os.tmpdir(),
-});*/
+});
 
 app.use(express.static('frontend'));
 
@@ -23,7 +22,7 @@ app.post('/api/drive', (req : Request , res : Response) : void => {
     {
         console.log("test réussi");
         //Rajouter un test pour l'existance du dossier
-        fs.mkdir(myPath + "/" + req.query.name, (err : ErrnoException | null): void => {
+        fs.mkdir(myPath + "/" + req.query.name, (err : NodeJS.ErrnoException | null): void => {
             if(err)
             {
                 console.log(err);
@@ -50,7 +49,7 @@ app.post('/api/drive/:folder', (req : Request, res : Response) : void => {
         {
             console.log("test réussi");
             //Rajouter un test pour l'existance du dossier
-            fs.mkdir(myPath + "/" + folderName + "/" + req.query.name, (err : ErrnoException | null): void => {
+            fs.mkdir(myPath + "/" + folderName + "/" + req.query.name, (err : NodeJS.ErrnoException | null): void => {
                 if(err)
                 {
                     console.log(err);
@@ -104,7 +103,7 @@ app.get('/api/drive/:name', (req : Request, res : Response): void => {
     let nameFile: string = req.params.name;
     if(fs.existsSync(myPath + "/" + nameFile))
     {
-        fs.stat(myPath + "/" + nameFile, async(err : ErrnoException | null, fold : fs.Stats) : Promise<void> => {
+        fs.stat(myPath + "/" + nameFile, async(err : NodeJS.ErrnoException | null, fold : fs.Stats) : Promise<void> => {
             if (fold.isDirectory())
             {
                 //Lire un dossier
@@ -157,10 +156,10 @@ app.delete('/api/drive/:name', (req : Request, res : Response): void => {
     {
         console.log("test réussi");
         //Rajouter un test pour l'existance du dossier
-        fs.stat(myPath + "/" + nameFile, (err : ErrnoException | null, fold : fs.Stats) : void => {
+        fs.stat(myPath + "/" + nameFile, (err : NodeJS.ErrnoException | null, fold : fs.Stats) : void => {
             if (fold.isDirectory())
             {
-                fs.rmdir(myPath + "/" + nameFile, (err : ErrnoException | null) : void => {
+                fs.rmdir(myPath + "/" + nameFile, (err : NodeJS.ErrnoException | null) : void => {
                     if (err) {
                         console.log(err);
                     }
@@ -169,7 +168,7 @@ app.delete('/api/drive/:name', (req : Request, res : Response): void => {
             }
             else
             {
-                fs.rm(myPath + "/" + nameFile, (err : ErrnoException | null) : void => {
+                fs.rm(myPath + "/" + nameFile, (err : NodeJS.ErrnoException | null) : void => {
                     if (err) {
                         console.log(err);
                     }
@@ -196,10 +195,10 @@ app.delete('/api/drive/:folder/:name', (req : Request, res : Response) : void =>
         {
             console.log("test réussi");
             //Rajouter un test pour l'existance du dossier
-            fs.stat(myPath + "/" + folderName + "/" + name, (err: ErrnoException| null, fold : fs.Stats) : void => {
+            fs.stat(myPath + "/" + folderName + "/" + name, (err: NodeJS.ErrnoException| null, fold : fs.Stats) : void => {
                 if (fold.isDirectory())
                 {
-                    fs.rmdir(myPath + "/" + folderName + "/" + name, (err : ErrnoException | null) : void => {
+                    fs.rmdir(myPath + "/" + folderName + "/" + name, (err : NodeJS.ErrnoException | null) : void => {
                         if (err) {
                             console.log(err);
                         }
@@ -208,7 +207,7 @@ app.delete('/api/drive/:folder/:name', (req : Request, res : Response) : void =>
                 }
                 else
                 {
-                    fs.rm(myPath + "/" + folderName + "/" + name, (err: ErrnoException | null) : void => {
+                    fs.rm(myPath + "/" + folderName + "/" + name, (err: NodeJS.ErrnoException | null) : void => {
                         if (err) {
                             console.log(err);
                         }
