@@ -12,12 +12,12 @@ bb.extend(app, {
 app.use(express.static('frontend'));
 
 const myPath : string = os.tmpdir();
-let myRegex: RegExp = /^[a-zA-Z0-9]+$/;
+let myRegex : RegExp = /^[a-zA-Z0-9]+$/;
 
 ////////////////////////////////// METHOD POST ///////////////////////////////////////////////////
 //POST : Creation d'un répertoire
 app.post('/api/drive', (req : Request , res : Response) : void => {
-    let testChaine : string |  ParsedQs | string[] | ParsedQs[] | undefined = req.query.name;
+    let testChaine : string | ParsedQs | string[] | ParsedQs[] | undefined = req.query.name;
     if(myRegex.test(testChaine))
     {
         console.log("test réussi");
