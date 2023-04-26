@@ -235,8 +235,6 @@ app.put('/api/drive', (req: Request, res: Response) : void =>
 {
 
     res.setHeader('Content-Type', 'multipart/form-data');
-    res.setHeader('Accept-Encoding', 'gzip, *');
-    res.setHeader('Content-Encoding', 'gzip, *');
     let fileName : any = req.files.file.filename;
     if(fileName)
     {
@@ -254,8 +252,6 @@ app.put('/api/drive', (req: Request, res: Response) : void =>
 app.put('/api/drive/:folder', (req : Request, res : Response) : void => {
 
     res.setHeader('Content-Type', 'multipart/form-data');
-    res.setHeader('Accept-Encoding', 'gzip, *');
-    res.setHeader('Content-Encoding', 'gzip, *');
     let folderName : string = req.params.folder;
     if(fs.existsSync(myPath + "/" + folderName))
     {
