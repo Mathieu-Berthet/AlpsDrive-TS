@@ -38,8 +38,8 @@ app.post('/api/drive', (req : Request , res : Response) : void => {
 });
 
 //POST : Creation dossier dans un dossier
-app.post('/api/drive/:folder', (req : Request, res : Response) : void => {
-    let folderName : string = req.params.folder;
+app.post('/api/drive/*', (req : Request, res : Response) : void => {
+    let folderName : string = req.params[0];
 
     let testChaines : string |  ParsedQs | string[] | ParsedQs[] | undefined = req.query.name;
 
@@ -99,8 +99,8 @@ app.get('/api/drive', async (req : Request, res : Response) : Promise<void>  => 
 })
 
 //GET pour un seul item. Si c'est un répertoire, cela affiche les dossiers et fichiers dedans, si c'est un fichier, affiche les infos du fichier
-app.get('/api/drive/:name', (req : Request, res : Response): void => {
-    let nameFile: string = req.params.name;
+app.get('/api/drive/*', (req : Request, res : Response): void => {
+    let nameFile: string = req.params[0];
     if(fs.existsSync(myPath + "/" + nameFile))
     {
         fs.stat(myPath + "/" + nameFile, async(err : NodeJS.ErrnoException | null, fold : fs.Stats) : Promise<void> => {
@@ -149,9 +149,9 @@ app.get('/api/drive/:name', (req : Request, res : Response): void => {
 // A faire : Tester si c'est un fichier ou un dossier
 
 //DELETE : Supression d'un répertoire
-app.delete('/api/drive/:name', (req : Request, res : Response): void => {
-    let nameFile: string = req.params.name;
-    let newFileName: string = nameFile.replace('.', '');
+app.delete('/api/drive/*', (req : Request, res : Response): void => {
+    let nameFile: string = req.params[0];
+    let newFileName: string = replaceAll(/[./-_* ]/, '', nameFile);
     if(myRegex.test(newFileName))
     {
         console.log("test réussi");
@@ -184,51 +184,6 @@ app.delete('/api/drive/:name', (req : Request, res : Response): void => {
     }
 });
 
-//DELETE : Supression d'un dossier dans un dossier
-app.delete('/api/drive/:folder/:name', (req : Request, res : Response) : void => {
-    let folderName: string = req.params.folder;
-    let name : string = req.params.name;
-    if(fs.existsSync(myPath + "/" + folderName))
-    {
-        let newFileName = name.replace('.', '');
-        if(myRegex.test(newFileName))
-        {
-            console.log("test réussi");
-            //Rajouter un test pour l'existance du dossier
-            fs.stat(myPath + "/" + folderName + "/" + name, (err: NodeJS.ErrnoException| null, fold : fs.Stats) : void => {
-                if (fold.isDirectory())
-                {
-                    fs.rmdir(myPath + "/" + folderName + "/" + name, (err : NodeJS.ErrnoException | null) : void => {
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                    res.status(201).send(myPath);
-                }
-                else
-                {
-                    fs.rm(myPath + "/" + folderName + "/" + name, (err: NodeJS.ErrnoException | null) : void => {
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                    res.status(201).send(myPath);
-                }
-            });
-        }
-        else
-        {
-            console.log("Test echoué");
-            res.status(400);
-        }
-    }
-    else
-    {
-        console.log("Le fichier ou répertoire est déjà supprimé");
-        res.status(404);
-    }
-
-})
 
 //////////////////////////////////  METHOD PUT ///////////////////////////////////////////////////
 app.put('/api/drive', (req: Request, res: Response) : void =>
@@ -249,10 +204,10 @@ app.put('/api/drive', (req: Request, res: Response) : void =>
     }
 });
 
-app.put('/api/drive/:folder', (req : Request, res : Response) : void => {
+app.put('/api/drive/*', (req : Request, res : Response) : void => {
 
     res.setHeader('Content-Type', 'multipart/form-data');
-    let folderName : string = req.params.folder;
+    let folderName : string = req.params[0];
     if(fs.existsSync(myPath + "/" + folderName))
     {
         let fileFName  : any = req.files.file.filename;
@@ -274,5 +229,11 @@ app.put('/api/drive/:folder', (req : Request, res : Response) : void => {
         res.status(404);
     }
 });
+
+
+function replaceAll(recherche : RegExp, remplacement : string, chainToChange : string) : string
+{
+    return chainToChange.split(recherche).join(remplacement);
+}
 
 export default app;
