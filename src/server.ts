@@ -15,28 +15,6 @@ const myPath : string = os.tmpdir();
 let myRegex : RegExp = /^[a-zA-Z0-9]+$/;
 
 ////////////////////////////////// METHOD POST ///////////////////////////////////////////////////
-//POST : Creation d'un répertoire
-app.post('/api/drive', (req : Request , res : Response) : void => {
-    let testChaine : string | ParsedQs | string[] | ParsedQs[] | undefined = req.query.name;
-    if(myRegex.test(testChaine))
-    {
-        console.log("test réussi");
-        //Rajouter un test pour l'existance du dossier
-        fs.mkdir(myPath + "/" + req.query.name, (err : NodeJS.ErrnoException | null): void => {
-            if(err)
-            {
-                console.log(err);
-            }
-        });
-        res.status(201).send(myPath);
-    }
-    else
-    {
-        console.log("Test echoué");
-        res.status(400);
-    }
-});
-
 //POST : Creation dossier dans un dossier
 app.post('/api/drive/*', (req : Request, res : Response) : void => {
     let folderName : string = req.params[0];
@@ -73,31 +51,6 @@ app.post('/api/drive/*', (req : Request, res : Response) : void => {
 
 
 //////////////////////////////////  METHOD GET ///////////////////////////////////////////////////
-
-//GET tous les fichiers et dossiers d'un répertoire
-app.get('/api/drive', async (req : Request, res : Response) : Promise<void>  => {
-    console.log("coucou2");
-    let files : fs.Dirent[] = await fs.promises.readdir(myPath, {withFileTypes : true});
-    const fileList = files.map((fileName : fs.Dirent) => {
-        if(fileName.isDirectory())
-        {
-            return {
-                "name" : fileName.name,
-                "isFolder" : fileName.isDirectory(),
-            }
-        }
-        else
-        {
-            return {
-                "name" : fileName.name,
-                "isFolder" : fileName.isDirectory(),
-                "size": fs.statSync(myPath + "/" + fileName.name)['size']
-            }
-        }
-    });
-    res.status(200).json(fileList);
-})
-
 //GET pour un seul item. Si c'est un répertoire, cela affiche les dossiers et fichiers dedans, si c'est un fichier, affiche les infos du fichier
 app.get('/api/drive/*', (req : Request, res : Response): void => {
     let nameFile: string = req.params[0];
@@ -186,24 +139,6 @@ app.delete('/api/drive/*', (req : Request, res : Response): void => {
 
 
 //////////////////////////////////  METHOD PUT ///////////////////////////////////////////////////
-app.put('/api/drive', (req: Request, res: Response) : void =>
-{
-
-    res.setHeader('Content-Type', 'multipart/form-data');
-    let fileName : any = req.files.file.filename;
-    if(fileName)
-    {
-        console.log("coucou");
-        fs.copyFileSync(req.files.file.file, myPath + "/" + fileName);
-        res.status(201).send(myPath);
-    }
-    else
-    {
-        console.log("pas de fichier");
-        res.status(400).send(myPath);
-    }
-});
-
 app.put('/api/drive/*', (req : Request, res : Response) : void => {
 
     res.setHeader('Content-Type', 'multipart/form-data');
