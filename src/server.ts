@@ -15,11 +15,11 @@ const myPath : string = os.tmpdir();
 let myRegex : RegExp = /^[a-zA-Z0-9]+$/;
 
 ////////////////////////////////// METHOD POST ///////////////////////////////////////////////////
-//POST : Creation dossier dans un dossier
+//POST : Creation de dossiers
 app.post('/api/drive/*', (req : Request, res : Response) : void => {
     let folderName : string = req.params[0];
 
-    let testChaines : string |  ParsedQs | string[] | ParsedQs[] | undefined = req.query.name;
+    let testChaines = req.query.name as string;
 
     if(fs.existsSync(myPath + "/" + folderName))
     {
@@ -99,14 +99,13 @@ app.get('/api/drive/*', (req : Request, res : Response): void => {
 
 
 //////////////////////////////////  METHOD DELETE ///////////////////////////////////////////////////
-// A faire : Tester si c'est un fichier ou un dossier
-
 //DELETE : Supression d'un répertoire
 app.delete('/api/drive/*', (req : Request, res : Response): void => {
     let nameFile: string = req.params[0];
-    let newFileName: string = replaceAll(/[./-_* ]/, '', nameFile);
+
     if(fs.existsSync(myPath + "/" + nameFile))
     {
+        let newFileName: string = replaceAll(/[./-_* ]/, '', nameFile);
         if (myRegex.test(newFileName))
         {
             console.log("Test réussi");
